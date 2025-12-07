@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginController extends ChangeNotifier {
   bool _isLoading = false;
@@ -17,26 +19,41 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> performLogin(String email, String password) async {
-    _setErrorMessage(null); // Limpa o erro anterior
+  Future<bool> performLogin(String username, String password) async {
+    _setErrorMessage(null);
     _setLoading(true);
 
-    if (email.isEmpty || password.isEmpty) {
+    if (username.isEmpty || password.isEmpty) {
       _setErrorMessage('Email e senha não podem ser vazios.');
       _setLoading(false);
       return false;
     }
-    
-    await Future.delayed(const Duration(seconds: 2));
 
-    if (email == 'teste@exemplo.com' && password == '123456') {
-      _setErrorMessage(null); // Limpa o erro em caso de sucesso
+    try {
+      final response = await http.post(
+        Uri.parse('https://petaliferous-pearl-vocalic.ngrok-free.dev/auth/login/'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "username": username,
+          "password": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        _setErrorMessage(null);
+        _setLoading(false);
+        return true;  
+      } else {
+        _setErrorMessage('Credenciais inválidas.');
+        _setLoading(false);
+        return false;
+      }
+    } catch (e) {
+      _setErrorMessage('Erro ao conectar com o servidor.');
       _setLoading(false);
-      return true; // Login bem-sucedido
-    } else {
-      _setErrorMessage('Credenciais inválidas. Tente novamente.');
-      _setLoading(false);
-      return false; // Login falhou
+      return false;
     }
   }
 }

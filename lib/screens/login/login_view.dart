@@ -11,13 +11,12 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definindo a cor primária verde/teal para o tema Mobi Hora
-    const Color primaryGreen = Color(0xFF008080); // Um verde escuro/Teal forte
+    const Color primaryGreen = Color(0xFF008080);
 
     final controller = context.watch<LoginController>();
-    
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     void showMessage(String message, {bool isSuccess = false}) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -28,45 +27,40 @@ class LoginView extends StatelessWidget {
       );
     }
 
-    // Usando Theme para garantir que os campos de texto usem a cor verde no foco
     final inputTheme = Theme.of(context).copyWith(
       colorScheme: Theme.of(context).colorScheme.copyWith(
-        primary: primaryGreen, // Cor de foco e destaque do TextField
+        primary: primaryGreen,
       ),
     );
 
     return Scaffold(
-      backgroundColor: Colors.white, // Fundo limpo para contraste
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Ícone e Mensagem de Boas-Vindas (Mobi Hora)
               const Icon(
-                Icons.directions_bus_filled, // Ícone de ônibus
+                Icons.directions_bus_filled,
                 size: 80,
                 color: primaryGreen,
               ),
               const SizedBox(height: 24),
-              
-              // Título (Bem-vindo(a) ao Mobi Hora!)
               const Text(
                 'Bem-vindo(a) ao Mobi Hora!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 28, 
-                  fontWeight: FontWeight.w900, 
-                  color: primaryGreen
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: primaryGreen,
                 ),
               ),
-              // Subtítulo
               const Text(
                 'Acesse sua conta para planejar seu trajeto.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16, 
+                  fontSize: 16,
                   color: Colors.grey,
                 ),
               ),
@@ -76,14 +70,14 @@ class LoginView extends StatelessWidget {
               Theme(
                 data: inputTheme,
                 child: TextField(
-                  controller: _emailController,
+                  controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'username',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)), // Borda arredondada
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(Icons.person_2),
                   ),
                   enabled: !controller.isLoading,
                 ),
@@ -94,12 +88,12 @@ class LoginView extends StatelessWidget {
               Theme(
                 data: inputTheme,
                 child: TextField(
-                  controller: _passwordController,
+                  controller: passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Senha',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)), // Borda arredondada
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
                     prefixIcon: Icon(Icons.lock),
                   ),
@@ -108,53 +102,94 @@ class LoginView extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // Mensagem de Erro (Condicional)
+              // Mensagem de erro
               if (controller.errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Text(
                     controller.errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
 
-              // Botão de Login
+              // Botão Entrar
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: controller.isLoading
-                      ? null 
+                      ? null
                       : () async {
-                            final loginController = context.read<LoginController>();
-                            
-                            final success = await loginController.performLogin(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
+                          final loginController =
+                              context.read<LoginController>();
 
-                            if (success) {
-                              showMessage('Login realizado com sucesso!', isSuccess: true);
-                              Navigator.of(context).pushReplacementNamed(HomeView.routeName);
-                            } else if (loginController.errorMessage != null) {
-                              showMessage(loginController.errorMessage!);
-                            }
-                          },
+                          final success =
+                              await loginController.performLogin(
+                            emailController.text,
+                            passwordController.text,
+                          );
+
+                          if (success) {
+                            showMessage(
+                              'Login realizado com sucesso!',
+                              isSuccess: true,
+                            );
+                            Navigator.of(context).pushReplacementNamed(
+                              HomeView.routeName,
+                            );
+                          } else if (loginController.errorMessage != null) {
+                            showMessage(loginController.errorMessage!);
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryGreen, // Cor de fundo verde
+                    backgroundColor: primaryGreen,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // Borda arredondada
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 5, // Sutil sombra para profundidade
+                    elevation: 5,
                   ),
                   child: controller.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
                           'Entrar',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Botão Criar Conta
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: controller.isLoading
+                      ? null
+                      : () {
+                          Navigator.of(context).pushNamed('/register');
+                        },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: primaryGreen,
+                    side: const BorderSide(color: primaryGreen),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Criar conta',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],

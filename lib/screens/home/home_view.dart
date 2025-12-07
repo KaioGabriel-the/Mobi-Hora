@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
   static const String routeName = '/home';
-  
+
   const HomeView({super.key});
 
-  static const Color primaryGreen = Color(0xFF008080); 
+  static const Color primaryGreen = Color(0xFF008080);
 
   Widget _buildActionButton({
     required BuildContext context,
@@ -23,11 +23,15 @@ class HomeView extends StatelessWidget {
           icon: Icon(icon, color: Colors.white, size: 28),
           label: Text(
             label,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryGreen.withOpacity(0.9), 
+            backgroundColor: primaryGreen.withOpacity(0.9),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
@@ -42,9 +46,12 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobi Hora', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Mobi Hora',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: primaryGreen,
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -54,21 +61,17 @@ class HomeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Ícone Principal
-              const Icon(
-                Icons.directions_bus, 
-                size: 100, 
-                color: primaryGreen,
-              ),
+              const Icon(Icons.directions_bus, size: 100, color: primaryGreen),
               const SizedBox(height: 24),
-              
+
               // Mensagem de Boas-Vindas
               const Text(
                 'Olá! O que você gostaria de fazer hoje?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22, 
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333)
+                  color: Color(0xFF333333),
                 ),
               ),
               const SizedBox(height: 50),
@@ -77,9 +80,10 @@ class HomeView extends StatelessWidget {
               _buildActionButton(
                 context: context,
                 icon: Icons.calendar_month,
-                label: 'Ônibus Cadastrados',
+                label: 'Paradas cadastradas',
                 onPressed: () {
                   print('Navegar para Agenda de Ônibus (Rotas)');
+                  // Navigator.of(context).pushReplacementNamed();
                 },
               ),
 
@@ -100,7 +104,9 @@ class HomeView extends StatelessWidget {
                 label: 'Informações do App',
                 onPressed: () {
                   print('Navegar para Informações do App');
-                  Navigator.of(context).pushReplacementNamed(InfoView.routeName);
+                  Navigator.of(
+                    context,
+                  ).pushReplacementNamed(InfoView.routeName);
                 },
               ),
             ],
