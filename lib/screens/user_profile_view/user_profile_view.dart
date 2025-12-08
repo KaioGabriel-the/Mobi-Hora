@@ -27,15 +27,17 @@ class _UserProfileViewState extends State<UserProfileView> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://SUA_API.com/user/me'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+        Uri.parse('https://petaliferous-pearl-vocalic.ngrok-free.dev/user/me'),
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode != 200) {
-        throw Exception("Erro ao buscar usuário");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Erro ao buscar usuário"),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
 
       final data = jsonDecode(response.body);
@@ -75,61 +77,56 @@ class _UserProfileViewState extends State<UserProfileView> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : error != null
-                ? Center(
-                    child: Text(
-                      "Erro: $error",
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
+            ? Center(
+                child: Text(
+                  "Erro: $error",
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              )
+            : user == null
+            ? const Center(child: Text("Nenhum dado encontrado"))
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Informações do Usuário",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: primaryGreen,
                     ),
-                  )
-                : user == null
-                    ? const Center(
-                        child: Text("Nenhum dado encontrado"),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Informações do Usuário",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: primaryGreen,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 24),
 
-                          _buildInfo("ID:", user!['id'].toString()),
-                          _buildInfo("Nome:", user!['name']),
-                          _buildInfo("Usuário:", user!['username']),
+                  _buildInfo("ID:", user!['id'].toString()),
+                  _buildInfo("Nome:", user!['name']),
+                  _buildInfo("Usuário:", user!['username']),
 
-                          const SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryGreen,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                "Voltar",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryGreen,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: const Text(
+                        "Voltar",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -148,12 +145,7 @@ class _UserProfileViewState extends State<UserProfileView> {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 18),
-            ),
-          ),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 18))),
         ],
       ),
     );

@@ -27,7 +27,7 @@ class StopDetailView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              stop['name'] ?? 'Sem nome',
+              stop['properties']['name'] ?? 'Sem nome',
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
@@ -38,17 +38,17 @@ class StopDetailView extends StatelessWidget {
             const SizedBox(height: 20),
 
             Text(
-              'Latitude: ${stop['latitude'] ?? '-'}',
+              'Latitude: ${stop['geometry']['coordinates'][0] ?? '-'}',
               style: const TextStyle(fontSize: 18),
             ),
             Text(
-              'Longitude: ${stop['longitude'] ?? '-'}',
+              'Longitude: ${stop['geometry']['coordinates'][1] ?? '-'}',
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 12),
 
             Text(
-              'Distância: ${stop['distance'] ?? '-'} metros',
+              'Distância: ${(stop['properties']['distance']) ?? '-'} metros',
               style: const TextStyle(fontSize: 18),
             ),
 
@@ -84,7 +84,7 @@ class StopDetailView extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-
+/*
             // ---------------- Botão de editar ----------------
             SizedBox(
               width: double.infinity,
@@ -112,6 +112,7 @@ class StopDetailView extends StatelessWidget {
                 ),
               ),
             ),
+            */
           ],
         ),
       ),

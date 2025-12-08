@@ -75,15 +75,17 @@ class _StopCreateViewState extends State<StopCreateView> {
       });
 
       final response = await http.post(
-        Uri.parse("https://SUA_API.com/stops/create"),
+        Uri.parse("https://petaliferous-pearl-vocalic.ngrok-free.dev/bus-stops/"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
         },
         body: jsonEncode({
           "name": name,
-          "latitude": double.parse(latitude),
-          "longitude": double.parse(longitude),
+          "location": {
+            "type": "Point",
+            "coordinates": [double.parse(longitude), double.parse(latitude)]
+          }
         }),
       );
 
