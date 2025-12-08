@@ -1,4 +1,6 @@
 import 'package:app_projeto/screens/info/info_view.dart';
+import 'package:app_projeto/screens/stops/stops_view.dart';
+import 'package:app_projeto/screens/user_profile_view/user_profile_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
@@ -8,8 +10,8 @@ class HomeView extends StatelessWidget {
 
   static const Color primaryGreen = Color(0xFF008080);
 
+  /// Botão reutilizável
   Widget _buildActionButton({
-    required BuildContext context,
     required IconData icon,
     required String label,
     required VoidCallback onPressed,
@@ -44,6 +46,9 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ********** RECEBENDO TOKEN **********
+    final String token = ModalRoute.of(context)!.settings.arguments as String;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -53,18 +58,16 @@ class HomeView extends StatelessWidget {
         backgroundColor: primaryGreen,
         automaticallyImplyLeading: false,
       ),
+
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Ícone Principal
               const Icon(Icons.directions_bus, size: 100, color: primaryGreen),
               const SizedBox(height: 24),
 
-              // Mensagem de Boas-Vindas
               const Text(
                 'Olá! O que você gostaria de fazer hoje?',
                 textAlign: TextAlign.center,
@@ -76,37 +79,42 @@ class HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 50),
 
-              // 1. Agenda (Ver Ônibus Cadastrados)
+              // ********** PARADAS **********
               _buildActionButton(
-                context: context,
                 icon: Icons.calendar_month,
-                label: 'Paradas cadastradas',
+                label: 'Paradas',
                 onPressed: () {
-                  print('Navegar para Agenda de Ônibus (Rotas)');
-                  // Navigator.of(context).pushReplacementNamed();
+                  Navigator.pushNamed(
+                    context,
+                    StopsView.routeName,
+                    arguments: token,
+                  );
                 },
               ),
 
-              // 2. Perfil
+              // ********** PERFIL **********
               _buildActionButton(
-                context: context,
                 icon: Icons.person,
                 label: 'Meu Perfil',
                 onPressed: () {
-                  print('Navegar para Meu Perfil');
+                  Navigator.pushNamed(
+                    context,
+                    UserProfileView.routeName,
+                    arguments: token,
+                  );
                 },
               ),
 
-              // 3. Informações
+              // ********** INFORMAÇÕES **********
               _buildActionButton(
-                context: context,
                 icon: Icons.info_outline,
                 label: 'Informações do App',
                 onPressed: () {
-                  print('Navegar para Informações do App');
-                  Navigator.of(
+                  Navigator.pushNamed(
                     context,
-                  ).pushReplacementNamed(InfoView.routeName);
+                    InfoView.routeName,
+                    arguments: token,
+                  );
                 },
               ),
             ],

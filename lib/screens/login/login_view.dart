@@ -4,28 +4,33 @@ import 'package:provider/provider.dart';
 import '../../controller/login_controller.dart';
 import '../home/home_view.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   static const String routeName = '/login';
 
   const LoginView({super.key});
 
   @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  static const Color primaryGreen = Color(0xFF008080);
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  void showMessage(String message, {bool isSuccess = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isSuccess ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const Color primaryGreen = Color(0xFF008080);
-
     final controller = context.watch<LoginController>();
-
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
-    void showMessage(String message, {bool isSuccess = false}) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isSuccess ? Colors.green : Colors.red,
-        ),
-      );
-    }
 
     final inputTheme = Theme.of(context).copyWith(
       colorScheme: Theme.of(context).colorScheme.copyWith(
@@ -127,22 +132,28 @@ class LoginView extends StatelessWidget {
                           final loginController =
                               context.read<LoginController>();
 
-                          final success =
-                              await loginController.performLogin(
+                          // ⬇️ Perform login e recebe o token
+                          final token = await loginController.performLogin(
                             emailController.text,
                             passwordController.text,
                           );
 
-                          if (success) {
+                          if (token != null && token.isNotEmpty) {
                             showMessage(
                               'Login realizado com sucesso!',
                               isSuccess: true,
                             );
+
+                            // ⬇️ Agora enviando o token para a Home
                             Navigator.of(context).pushReplacementNamed(
                               HomeView.routeName,
+                              arguments: token,
                             );
-                          } else if (loginController.errorMessage != null) {
-                            showMessage(loginController.errorMessage!);
+                          } else {
+                            showMessage(
+                              loginController.errorMessage ??
+                                  'Erro desconhecido ao fazer login.',
+                            );
                           }
                         },
                   style: ElevatedButton.styleFrom(

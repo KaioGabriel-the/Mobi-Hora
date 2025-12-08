@@ -19,14 +19,16 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> performLogin(String username, String password) async {
+  /// Realiza o login e retorna o token caso tenha sucesso.
+  /// Retorna null em caso de erro.
+  Future<String?> performLogin(String username, String password) async {
     _setErrorMessage(null);
     _setLoading(true);
 
     if (username.isEmpty || password.isEmpty) {
       _setErrorMessage('Email e senha não podem ser vazios.');
       _setLoading(false);
-      return false;
+      return null;
     }
 
     try {
@@ -41,19 +43,29 @@ class LoginController extends ChangeNotifier {
         }),
       );
 
+      _setLoading(false);
+
       if (response.statusCode == 200) {
-        _setErrorMessage(null);
-        _setLoading(false);
-        return true;  
-      } else {
+        final data = jsonDecode(response.body);
+
+        // garante que "access" existe
+        if (data != null && data["access"] != null) {
+          return data["access"]; // ⬅ token enviado para a Home
+        } else {
+          _setErrorMessage("Erro: resposta sem token.");
+          return null;
+        }
+      } else if (response.statusCode == 401) {
         _setErrorMessage('Credenciais inválidas.');
-        _setLoading(false);
-        return false;
+        return null;
+      } else {
+        _setErrorMessage('Erro inesperado. Código: ${response.statusCode}');
+        return null;
       }
     } catch (e) {
       _setErrorMessage('Erro ao conectar com o servidor.');
       _setLoading(false);
-      return false;
+      return null;
     }
   }
 }
