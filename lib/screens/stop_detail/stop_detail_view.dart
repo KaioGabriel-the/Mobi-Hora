@@ -1,6 +1,8 @@
 import 'package:app_projeto/screens/stop_map_view/stop_map_view.dart';
 import 'package:flutter/material.dart';
 
+import '../bus_list/bus_list_view.dart';
+
 class StopDetailView extends StatelessWidget {
   static const String routeName = '/stop-detail';
 
@@ -14,6 +16,8 @@ class StopDetailView extends StatelessWidget {
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final String token = args['token'];
     final dynamic stop = args['stop'];
+
+    final String stopId = stop['properties']['id'].toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -45,16 +49,17 @@ class StopDetailView extends StatelessWidget {
               'Longitude: ${stop['geometry']['coordinates'][1] ?? '-'}',
               style: const TextStyle(fontSize: 18),
             ),
+
             const SizedBox(height: 12),
 
             Text(
-              'Distância: ${(stop['properties']['distance']) ?? '-'} metros',
+              'Distância: ${stop['properties']['distance'] ?? '-'} metros',
               style: const TextStyle(fontSize: 18),
             ),
 
             const SizedBox(height: 40),
 
-            // ---------------- Botão para abrir mapa ----------------
+            // ---------------- Botão Ver no mapa ----------------
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -84,35 +89,35 @@ class StopDetailView extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-/*
-            // ---------------- Botão de editar ----------------
+
+            // ---------------- Botão Ver ônibus ----------------
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.directions_bus_filled, color: Colors.white),
                 onPressed: () {
                   Navigator.pushNamed(
                     context,
-                    '/stop-edit',
+                    BusListView.routeName, // 👉 Troque pela sua rota real
                     arguments: {
                       'token': token,
-                      'stop': stop,
+                      'stopId': stopId,
                     },
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryGreen,
+                  backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Editar Stop',
+                label: const Text(
+                  'Ver ônibus',
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
-            */
           ],
         ),
       ),
