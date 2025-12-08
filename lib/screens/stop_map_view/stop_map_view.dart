@@ -13,14 +13,21 @@ class StopMapView extends StatelessWidget {
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final stop = args['stop'];
 
-    final double lat = stop['latitude'];
-    final double lng = stop['longitude'];
+    // Adaptado ao formato GeoJSON
+    final geometry = stop['geometry'] ?? {};
+    final properties = stop['properties'] ?? {};
+
+    final coords = geometry['coordinates'] as List<dynamic>;
+    final double lng = coords[0];
+    final double lat = coords[1];
+
+    final String name = properties['name'] ?? 'Stop';
 
     final LatLng stopLocation = LatLng(lat, lng);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(stop['name']),
+        title: Text(name),
         backgroundColor: primaryGreen,
       ),
       body: GoogleMap(
@@ -32,7 +39,7 @@ class StopMapView extends StatelessWidget {
           Marker(
             markerId: const MarkerId('stopMarker'),
             position: stopLocation,
-            infoWindow: InfoWindow(title: stop['name']),
+            infoWindow: InfoWindow(title: name),
           )
         },
       ),

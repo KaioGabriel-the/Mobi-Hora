@@ -33,7 +33,7 @@ class HomeView extends StatelessWidget {
           ),
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryGreen.withOpacity(0.9),
+            backgroundColor: primaryGreen,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),

@@ -73,7 +73,7 @@ class InfoView extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        '• Kauã',
+                        '• Kawã',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF388E3C)),
                       ),
                       Text(

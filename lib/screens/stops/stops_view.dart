@@ -19,9 +19,9 @@ class _StopsViewState extends State<StopsView> {
   String? error;
   List<dynamic> stops = [];
 
-  late String token; // ← Token recebido
+  late String token;
 
-  static const Color primaryGreen = Color(0xFF008080);
+  static const Color primaryGreen = Color.fromARGB(255, 0, 128, 128);
 
   @override
   void didChangeDependencies() {
@@ -49,18 +49,14 @@ class _StopsViewState extends State<StopsView> {
 
       final double lat = posicao.latitude;
       final double lng = posicao.longitude;
+      final limit = 10;
 
-      final response = await http.post(
-        Uri.parse('https://SUA_API.com/stops/nearby'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', // ← TOKEN AQUI
-        },
-        body: jsonEncode({
-          'latitude': lat,
-          'longitude': lng,
-          'limit': 10,
-        }),
+      final uri = Uri.parse(
+        'https://petaliferous-pearl-vocalic.ngrok-free.dev/bus-stops/nearby/?lat=$lat&lng=$lng&limit=$limit',
+      );
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode != 200) {
@@ -68,9 +64,10 @@ class _StopsViewState extends State<StopsView> {
       }
 
       final data = jsonDecode(response.body);
+      print(data);
 
       setState(() {
-        stops = data['stops'] ?? [];
+        stops = data['features'] ?? [];
       });
     } catch (e) {
       setState(() {
@@ -86,41 +83,40 @@ class _StopsViewState extends State<StopsView> {
   void _abrirDetalheStop(dynamic stop) {
     Navigator.of(context).pushNamed(
       StopDetailView.routeName,
-      arguments: {
-        'token': token,
-        'stop': stop,
-      },
+      arguments: {'token': token, 'stop': stop},
     );
   }
 
   void _abrirCadastroStop() {
-    Navigator.of(context).pushNamed(
-      StopCreateView.routeName,
-      arguments: token,
-    );
+    Navigator.of(context).pushNamed(StopCreateView.routeName, arguments: token);
   }
 
   Widget _buildStopItem(dynamic stop) {
-    return InkWell(
-      onTap: () => _abrirDetalheStop(stop),
-      borderRadius: BorderRadius.circular(12),
-      child: Card(
-        elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        child: ListTile(
-          leading: const Icon(Icons.location_on, color: primaryGreen),
-          title: Text(stop['name'] ?? 'Stop sem nome'),
-          subtitle: Text('Distância: ${stop['distance'] ?? 'N/D'} m'),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        ),
+  final props = stop['properties'] ?? {};
+  final name = props['name'] ?? 'Stop sem nome';
+  final distance = props['distance']?.toStringAsFixed(2) ?? 'N/D';
+
+  return InkWell(
+    onTap: () => _abrirDetalheStop(stop),
+    borderRadius: BorderRadius.circular(12),
+    child: Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: const Icon(Icons.location_on, color: primaryGreen),
+        title: Text(name),
+        subtitle: Text('Distância: $distance m'),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, _buscarStopsProximos); 
+    Future.delayed(Duration.zero, _buscarStopsProximos);
   }
 
   @override
@@ -136,8 +132,8 @@ class _StopsViewState extends State<StopsView> {
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryGreen,
-        child: const Icon(Icons.add, color: Colors.white),
         onPressed: _abrirCadastroStop,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
 
       body: Padding(
@@ -145,20 +141,20 @@ class _StopsViewState extends State<StopsView> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : error != null
-                ? Center(
-                    child: Text(
-                      'Erro: $error',
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  )
-                : stops.isEmpty
-                    ? const Center(child: Text('Nenhum stop encontrado'))
-                    : ListView.builder(
-                        itemCount: stops.length,
-                        itemBuilder: (context, index) {
-                          return _buildStopItem(stops[index]);
-                        },
-                      ),
+            ? Center(
+                child: Text(
+                  'Erro: $error',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              )
+            : stops.isEmpty
+            ? const Center(child: Text('Nenhum stop encontrado'))
+            : ListView.builder(
+                itemCount: stops.length,
+                itemBuilder: (context, index) {
+                  return _buildStopItem(stops[index]);
+                },
+              ),
       ),
     );
   }
